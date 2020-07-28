@@ -1,6 +1,9 @@
 // Random particles based heavily on @trhino's work on Codepen: https://codepen.io/trhino/pen/JFmiK
 // Draggable slider based heavily on @bamf's work on Codepen: https://codepen.io/bamf/pen/jEpxOX
 
+// The below is genuinely god-awful code, and I apologize deeply for my sins.
+// I just wanna make a fun blog post, dear reader :c
+
 const draggerOffsetVw = 8;
 const particalSpawnVariance = 30;
 const baseVelocity = 800;
