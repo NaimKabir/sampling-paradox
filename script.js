@@ -216,10 +216,10 @@ Particles.prototype.animate = function(){
       }
 
       ctx.font = "30px Arial";
-      ctx.fillText(`Sampled Average Radius: ${sampledMeanRadius}`, self.canvas.width/2, self.canvas.height/2);
+      ctx.fillText(`Sampled Average Radius: ${sampledMeanRadius}`, self.canvas.width/3, self.canvas.height/2);
 
       ctx.font = "20px Arial";
-      ctx.fillText(`True Average Radius: ${averageParticleRadius}`, self.canvas.width/2, self.canvas.height/2 + 24);
+      ctx.fillText(`True Average Radius: ${averageParticleRadius}`, self.canvas.width/3, self.canvas.height/2 + 24);
 
     }  
   }, 1000/self.fps); 
