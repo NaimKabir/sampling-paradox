@@ -26,9 +26,6 @@ function Particles(){
   //particle radius min/max. particle speed is derived solely from radius.
   this.minRadius = 10; 
   this.maxRadius = 35;
-  //particle speed min/max
-  this.minSpeed = .05;
-  this.maxSpeed = .5;
   //frames per second 
   this.fps = 60;
   //number of particles
@@ -36,6 +33,9 @@ function Particles(){
   //required canvas variables
   this.canvas = document.getElementById('canvas');
   this.ctx = this.canvas.getContext('2d');
+
+  // Keep track of animation state
+  this.isAnimating = false;
 }
 
 /**
@@ -43,6 +43,7 @@ function Particles(){
  * @method init
  */
 Particles.prototype.init = function(){
+  this.particle = [];
   this.render();
   this.createCircle();
 }
@@ -92,7 +93,7 @@ Particles.prototype.createCircle = function(){
     // Base velocity will be divided by the area of a particle
     let radius = self._wrand()*radiusVariance + radiusMean;
     radius = radius < 0? Math.abs(radius) : radius;
-    const velocity = baseVelocity/ (Math.PI*(radius*radius));
+    const velocity = baseVelocity / (Math.PI*(radius*radius));
 
     // Convert raw velocity into x and y components with a randomized angle
     const direction = self._rand(0, 2*Math.PI);
@@ -112,7 +113,10 @@ Particles.prototype.createCircle = function(){
     self.draw(self.particle, i);
   }
   //...and once drawn, animate the particle
-  self.animate();
+  if (!self.isAnimating) {
+    self.isAnimating = true;
+    self.animate();
+  }
 }
 
 /**
@@ -143,7 +147,6 @@ Particles.prototype.animate = function(){
   
   setInterval(function(){
     particle = self.particle;
-
     //clears canvas
     self.clearCanvas();
     //then redraws particles in new positions based on velocity
@@ -196,10 +199,7 @@ $(document).ready(function(){
   });
 });
   
-  function drags(dragElement, resizeElement, container, particle) {
-
-    console.log(particle)
-      
+  function drags(dragElement, resizeElement, container, particle) {      
     // Initialize the dragging event on mousedown.
     dragElement.on('mousedown touchstart', function(e) {
       
@@ -248,19 +248,21 @@ $(document).ready(function(){
           $(this).removeClass('draggable');
           dragElement.removeClass('draggable');
           resizeElement.removeClass('resizable');
+          // Reset the animation on cancel
+          particle.init();
         });
 
       }).on('mouseup touchend touchcancel', function(){
         dragElement.removeClass('draggable');
         resizeElement.removeClass('resizable');
+        // Reset the animation on cancel
+        particle.init();
       });
       e.preventDefault();
     }).on('mouseup touchend touchcancel', function(e){
       dragElement.removeClass('draggable');
       resizeElement.removeClass('resizable');
-
       // Reset the animation on cancel
-      console.log("MOOP")
       particle.init();
     });
   }
