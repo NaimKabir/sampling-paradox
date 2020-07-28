@@ -6,7 +6,7 @@
 
 const draggerOffsetVw = 8;
 const particalSpawnVariance = 30;
-const baseVelocity = 800;
+const baseVelocity = 500;
 const radiusMean = 10;
 const radiusVariance = 3;
 const numParticles = 750;
