@@ -9,7 +9,7 @@ const particalSpawnVariance = 30;
 const baseVelocity = 500;
 const radiusMean = 10;
 const radiusVariance = 3;
-const numParticles = 750;
+const numParticles = 75;
 const maxSample = 10;
 
 // Particle code
@@ -305,17 +305,11 @@ $(document).ready(function(){
       }).on('mouseup touchend touchcancel', function(e){
         dragElement.removeClass('draggable');
         resizeElement.removeClass('resizable');
-        // Reset the animation on cancel
-        particle.init();
-        particle.sampleLeft = leftValue;
       });
       e.preventDefault();
     }).on('mouseup touchend touchcancel', function(e){
       dragElement.removeClass('draggable');
       resizeElement.removeClass('resizable');
-      // Reset the animation on cancel
-      particle.init();
-      particle.sampleLeft = leftValue;
     });
   }
   
