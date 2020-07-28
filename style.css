@@ -1,0 +1,45 @@
+html, body {
+    background: #fff;
+    overflow: hidden;
+  }
+  
+  .resize {
+    position: absolute;
+    height: 100vw;
+    width: 20vw;
+    background-color: #d00;
+    opacity: 0.5;
+  }
+  
+  .handle { /* Thin line seperator */
+    position: absolute;
+    left:22vw;
+    top:0vw;
+    bottom:0vw;
+    width:4px; 
+    background: rgba(0,0,0,.4); 
+    cursor: ew-resize;
+  }
+  
+  .handle:after {
+      position: absolute;
+      top: 50%;
+      width: 32px;
+      height: 32px;
+      margin: -32px 0 0 -16px;
+   
+      content:'\21d4';
+      color:white;
+      font-weight:bold;
+      font-size:12px;
+      text-align:center;
+      line-height:32px;
+   
+      background: #111;
+      border-radius: 50%;
+      transition:all 0.3s ease;
+      box-shadow:
+        0 2px 6px rgba(0,0,0,.3), 
+        inset 0 2px 0 rgba(255,255,255,.5),
+        inset 0 60px 50px -30px #777; 
+  }
