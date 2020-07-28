@@ -7,9 +7,9 @@
 const draggerOffsetVw = 8;
 const particalSpawnVariance = 30;
 const baseVelocity = 800;
-const radiusMean = 20;
-const radiusVariance = 5;
-const numParticles = 75;
+const radiusMean = 10;
+const radiusVariance = 3;
+const numParticles = 750;
 const maxSample = 10;
 
 // Particle code
@@ -34,7 +34,7 @@ function Particles(){
   // Keep track of line that will sample points:
   this.sampleLeft = 0;
 
-  this.opacity = 0.4;
+  this.opacity = 0.3;
   //frames per second 
   this.fps = 60;
   //number of particles
