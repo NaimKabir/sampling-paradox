@@ -292,7 +292,14 @@ $(document).ready(function(){
               
         // Set the new values for the slider and the handle. 
         // Bind mouseup events to stop dragging.
-        $('.resizable').css('width', widthPct);
+        $('.resizable').css('width', widthPct).on('mouseup touchend touchcancel', function (e) {
+          $(this).removeClass('draggable');
+          dragElement.removeClass('draggable');
+          resizeElement.removeClass('resizable');
+          // Reset the animation on cancel
+          particle.init();
+          particle.sampleLeft = leftValue;
+        });
         $('.draggable').css('left', leftPct).on('mouseup touchend touchcancel', function (e) {
           $(this).removeClass('draggable');
           dragElement.removeClass('draggable');
