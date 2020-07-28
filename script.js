@@ -51,6 +51,13 @@ Particles.prototype._rand = function(min, max){
   return Math.random() * (max - min) + min;
 }
 
+Particles.prototype._wrand = function(){
+  var u = 0, v = 0;
+  while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+  while(v === 0) v = Math.random();
+  return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+}
+
 /**
  * Sets canvas size and updates values on resize
  * @method render
@@ -79,8 +86,8 @@ Particles.prototype.createCircle = function(){
     
     particle[i] = {
       radius    : self._rand(self.minRadius, self.maxRadius),
-      xPos      : self._rand(0, canvas.width),
-      yPos      : self._rand(0, canvas.height),
+      xPos      : self._wrand() + canvas.width/2,
+      yPos      : self._wrand() + canvas.height/2,
       xVelocity : self._rand(self.minSpeed, self.maxSpeed),
       yVelocity : self._rand(self.minSpeed, self.maxSpeed),
       color     : 'rgba(' + color + ',' + self.opacity + ')'
