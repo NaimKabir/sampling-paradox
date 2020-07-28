@@ -106,7 +106,7 @@ Particles.prototype.createCircle = function(){
     const velocity = baseVelocity / (Math.PI*(radius*radius));
 
     // Find position
-    let xPos = self._wrand() * particalSpawnVariance + canvas.width/2;
+    let xPos = self._wrand() * particalSpawnVariance + 2*canvas.width/3;
     xPos = xPos < 0 + radius/2 ? 0 + radius/2 : xPos;
     xPos = xPos > self.canvas.width - radius/2 ? self.canvas.width - radius/2 : xPos
 
