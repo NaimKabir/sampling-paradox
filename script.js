@@ -169,6 +169,9 @@ Particles.prototype.animate = function(){
   
   setInterval(function(){
     particle = self.particle;
+    const roundToTwo = (num) => {return Math.round(num*100)/100};
+    let averageParticleRadius = particle.map(p => p.radius).reduce((acc, curr) => acc + curr);
+    averageParticleRadius = roundToTwo(averageParticleRadius / particle.length);
     //clears canvas
     self.clearCanvas();
     //then redraws particles in new positions based on velocity
@@ -203,6 +206,21 @@ Particles.prototype.animate = function(){
       else {
         self.draw(particle, i);
       }
+
+      // Draw text
+      let sampledMeanRadius = 0;
+      if (self.sampledParticles.length > 0) {
+        sampledMeanRadius = self.sampledParticles.map(i=>self.particle[i].radius).reduce((acc, current) => acc + current);
+        sampledMeanRadius = sampledMeanRadius / self.sampledParticles.length;
+        sampledMeanRadius = roundToTwo(sampledMeanRadius);
+      }
+
+      ctx.font = "30px Arial";
+      ctx.fillText(`Sampled Average Radius: ${sampledMeanRadius}`, self.canvas.width/2, self.canvas.height/2);
+
+      ctx.font = "20px Arial";
+      ctx.fillText(`True Average Radius: ${averageParticleRadius}`, self.canvas.width/2, self.canvas.height/2 + 24);
+
     }  
   }, 1000/self.fps); 
 }
