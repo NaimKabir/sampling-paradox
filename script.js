@@ -16,6 +16,7 @@ const radiusVariance = 5;
  * @constructor
  */
 function Particles(){
+  this.particle = [];
   //particle colors
   this.colors = {
     sampled: '255, 99, 71',
@@ -84,8 +85,6 @@ Particles.prototype.render = function(){
  * @method createCircle
  */
 Particles.prototype.createCircle = function(){
-  var particle = [];
-
   for (var i = 0; i < this.numParticles; i++) {
     var self = this;
     var color = self.colors.unsampled;
@@ -100,7 +99,7 @@ Particles.prototype.createCircle = function(){
     const xVelocity = Math.cos(direction)*velocity;
     const yVelocity = Math.sin(direction)*velocity;
     
-    particle[i] = {
+    self.particle[i] = {
       radius    : radius,
       xPos      : self._wrand() * particalSpawnVariance + canvas.width/2,
       yPos      : self._wrand() * particalSpawnVariance + canvas.height/2,
@@ -110,10 +109,10 @@ Particles.prototype.createCircle = function(){
     }
     
     //once values are determined, draw particle on canvas
-    self.draw(particle, i);
+    self.draw(self.particle, i);
   }
   //...and once drawn, animate the particle
-  self.animate(particle);
+  self.animate();
 }
 
 /**
@@ -138,11 +137,13 @@ Particles.prototype.draw = function(particle, i){
  * @param  {array} particle value from createCircle & draw methods
  * @method animate
  */
-Particles.prototype.animate = function(particle){
+Particles.prototype.animate = function(){
   var self = this,
           ctx = self.ctx;
   
   setInterval(function(){
+    particle = self.particle;
+
     //clears canvas
     self.clearCanvas();
     //then redraws particles in new positions based on velocity
@@ -171,30 +172,6 @@ Particles.prototype.animate = function(particle){
 }
 
 /**
- * Resets position of particle when it goes off screen
- * @param  {array} particle value from createCircle & draw methods
- * @param  {number} i value from createCircle method
- * @method resetParticle
- */
-Particles.prototype.resetParticle = function(particle, i){
-  var self = this;
-  
-  var random = self._rand(0, 1);
-  
-  if (random > .5) { 
-    // 50% chance particle comes from left side of window...
-    particle[i].xPos = -particle[i].radius;
-    particle[i].yPos = self._rand(0, canvas.height);
-  } else {
-    //... or bottom of window
-    particle[i].xPos = self._rand(0, canvas.width);
-    particle[i].yPos = canvas.height + particle[i].radius;   
-  }
-  //redraw particle with new values
-  self.draw(particle, i);
-}
-
-/**
  * Clears canvas between animation frames
  * @method clearCanvas
  */
@@ -202,25 +179,26 @@ Particles.prototype.clearCanvas = function(){
   this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
  
-
 // Draggable handle code:
 
 // Call & init
 $(document).ready(function(){
-    $('.top').each(function(){
-      var cur = $(this);
-      // Adjust the slider
-      var width = cur.find('.resize').width();
-      cur.find('.handle').css('left', width + draggerOffsetVw);
-      cur.find('.resize').css('width', width);
-      // Bind dragging events
-      drags(cur.find('.handle'), cur.find('.resize'), cur);
-    });
-    // go go go!
-    var particle = new Particles().init();
+  var particle = new Particles();
+  particle.init();
+  $('.top').each(function(){
+    var cur = $(this);
+    // Adjust the slider
+    var width = cur.find('.resize').width();
+    cur.find('.handle').css('left', width + draggerOffsetVw);
+    cur.find('.resize').css('width', width);
+    // Bind dragging events
+    drags(cur.find('.handle'), cur.find('.resize'), cur, particle);
   });
+});
   
-  function drags(dragElement, resizeElement, container) {
+  function drags(dragElement, resizeElement, container, particle) {
+
+    console.log(particle)
       
     // Initialize the dragging event on mousedown.
     dragElement.on('mousedown touchstart', function(e) {
@@ -280,6 +258,10 @@ $(document).ready(function(){
     }).on('mouseup touchend touchcancel', function(e){
       dragElement.removeClass('draggable');
       resizeElement.removeClass('resizable');
+
+      // Reset the animation on cancel
+      console.log("MOOP")
+      particle.init();
     });
   }
   
