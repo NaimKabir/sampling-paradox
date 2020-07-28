@@ -2,6 +2,12 @@
 // Draggable slider based heavily on @bamf's work on Codepen: https://codepen.io/bamf/pen/jEpxOX
 
 const draggerOffsetVw = 8;
+const particalSpawnVariance = 30;
+const baseVelocity = 800;
+const radiusMean = 20;
+const radiusVariance = 5;
+
+// Particle code
 
 /**
  * Generates random particles using canvas
@@ -83,13 +89,23 @@ Particles.prototype.createCircle = function(){
   for (var i = 0; i < this.numParticles; i++) {
     var self = this;
     var color = self.colors.unsampled;
+
+    // Base velocity will be divided by the area of a particle
+    let radius = self._wrand()*radiusVariance + radiusMean;
+    radius = radius < 0? Math.abs(radius) : radius;
+    const velocity = baseVelocity/ (Math.PI*(radius*radius));
+
+    // Convert raw velocity into x and y components with a randomized angle
+    const direction = self._rand(0, 2*Math.PI);
+    const xVelocity = Math.cos(direction)*velocity;
+    const yVelocity = Math.sin(direction)*velocity;
     
     particle[i] = {
-      radius    : self._rand(self.minRadius, self.maxRadius),
-      xPos      : self._wrand() + canvas.width/2,
-      yPos      : self._wrand() + canvas.height/2,
-      xVelocity : self._rand(self.minSpeed, self.maxSpeed),
-      yVelocity : self._rand(self.minSpeed, self.maxSpeed),
+      radius    : radius,
+      xPos      : self._wrand() * particalSpawnVariance + canvas.width/2,
+      yPos      : self._wrand() * particalSpawnVariance + canvas.height/2,
+      xVelocity : xVelocity,
+      yVelocity : yVelocity,
       color     : 'rgba(' + color + ',' + self.opacity + ')'
     }
     
@@ -187,7 +203,7 @@ Particles.prototype.clearCanvas = function(){
 }
  
 
-//
+// Draggable handle code:
 
 // Call & init
 $(document).ready(function(){
