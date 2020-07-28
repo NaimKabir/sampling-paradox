@@ -9,6 +9,8 @@ const particalSpawnVariance = 30;
 const baseVelocity = 800;
 const radiusMean = 20;
 const radiusVariance = 5;
+const numParticles = 75;
+const maxSample = 10;
 
 // Particle code
 
@@ -22,17 +24,21 @@ function Particles(){
   this.particle = [];
   //particle colors
   this.colors = {
-    sampled: '255, 99, 71',
+    sampled: '255, 81, 54',
     unsampled: '54, 54, 54',
   }
+
+  // Keep track of sampled particle indices
+  this.sampledParticles = [];
+
+  // Keep track of line that will sample points:
+  this.sampleLeft = 0;
+
   this.opacity = 0.4;
-  //particle radius min/max. particle speed is derived solely from radius.
-  this.minRadius = 10; 
-  this.maxRadius = 35;
   //frames per second 
   this.fps = 60;
   //number of particles
-  this.numParticles = 75;
+  this.numParticles = numParticles;
   //required canvas variables
   this.canvas = document.getElementById('canvas');
   this.ctx = this.canvas.getContext('2d');
@@ -47,6 +53,8 @@ function Particles(){
  */
 Particles.prototype.init = function(){
   this.particle = [];
+  this.sampledParticles = [];
+  this.sampleLeft = 0;
   this.render();
   this.createCircle();
 }
@@ -91,12 +99,23 @@ Particles.prototype.render = function(){
 Particles.prototype.createCircle = function(){
   for (var i = 0; i < this.numParticles; i++) {
     var self = this;
-    var color = self.colors.unsampled;
 
     // Base velocity will be divided by the area of a particle
     let radius = self._wrand()*radiusVariance + radiusMean;
     radius = radius < 0? Math.abs(radius) : radius;
     const velocity = baseVelocity / (Math.PI*(radius*radius));
+
+    // Find position
+    let xPos = self._wrand() * particalSpawnVariance + canvas.width/2;
+    xPos = xPos < 0 + radius/2 ? 0 + radius/2 : xPos;
+    xPos = xPos > self.canvas.width - radius/2 ? self.canvas.width - radius/2 : xPos
+
+    let yPos = self._wrand() * particalSpawnVariance + canvas.height/2;
+    yPos = yPos < 0 + radius/2 ? 0 + radius/2 : yPos;
+    yPos = yPos > self.canvas.height - radius/2 ? self.canvas.width - radius/2 : yPos
+
+    // Determine color and if this point has been sampled
+    var color = self.colors.unsampled;
 
     // Convert raw velocity into x and y components with a randomized angle
     const direction = self._rand(0, 2*Math.PI);
@@ -105,8 +124,8 @@ Particles.prototype.createCircle = function(){
     
     self.particle[i] = {
       radius    : radius,
-      xPos      : self._wrand() * particalSpawnVariance + canvas.width/2,
-      yPos      : self._wrand() * particalSpawnVariance + canvas.height/2,
+      xPos      : xPos,
+      yPos      : yPos,
       xVelocity : xVelocity,
       yVelocity : yVelocity,
       color     : 'rgba(' + color + ',' + self.opacity + ')'
@@ -156,6 +175,17 @@ Particles.prototype.animate = function(){
     for (var i = 0; i < self.numParticles; i++) {
       particle[i].xPos += particle[i].xVelocity;
       particle[i].yPos -= particle[i].yVelocity;
+
+      // Determine if this point has been sampled
+      // Paint sampled points differently
+      if (particle[i].xPos < self.sampleLeft) {
+        if (self.sampledParticles.length <= maxSample && !self.sampledParticles.includes(i)) {
+          self.sampledParticles.push(i);
+        }
+      }
+      if (self.sampledParticles.includes(i)) {
+        particle[i].color = 'rgba(' + self.colors.sampled + ',' + self.opacity + ')'
+      }
      
       //if particle is going of screen, make it bounce
       if (particle[i].xPos > self.canvas.width - particle[i].radius/2 ||
@@ -197,6 +227,7 @@ $(document).ready(function(){
     var width = cur.find('.resize').width();
     cur.find('.handle').css('left', width + draggerOffsetVw);
     cur.find('.resize').css('width', width);
+    particle.sampleLeft = width;
     // Bind dragging events
     drags(cur.find('.handle'), cur.find('.resize'), cur, particle);
   });
@@ -238,28 +269,27 @@ $(document).ready(function(){
         }
         
         // Translate the handle's left value to masked divs width.
-        widthValue = (leftValue + dragWidth/2 - containerOffset)*100.0/containerWidth;
-        leftValue = (leftValue + draggerOffsetVw + dragWidth/2 - containerOffset)*100.0/containerWidth;
-
-        widthPct = widthValue+'%';
-        leftPct = leftValue+'%';
+        widthPct = (leftValue + dragWidth/2 - containerOffset)*100.0/containerWidth+'%';
+        leftPct = (leftValue + draggerOffsetVw + dragWidth/2 - containerOffset)*100.0/containerWidth+'%';
               
         // Set the new values for the slider and the handle. 
         // Bind mouseup events to stop dragging.
         $('.resizable').css('width', widthPct);
-        $('.draggable').css('left', leftPct).on('mouseup touchend touchcancel', function () {
+        $('.draggable').css('left', leftPct).on('mouseup touchend touchcancel', function (e) {
           $(this).removeClass('draggable');
           dragElement.removeClass('draggable');
           resizeElement.removeClass('resizable');
           // Reset the animation on cancel
           particle.init();
+          particle.sampleLeft = leftValue;
         });
 
-      }).on('mouseup touchend touchcancel', function(){
+      }).on('mouseup touchend touchcancel', function(e){
         dragElement.removeClass('draggable');
         resizeElement.removeClass('resizable');
         // Reset the animation on cancel
         particle.init();
+        particle.sampleLeft = leftValue;
       });
       e.preventDefault();
     }).on('mouseup touchend touchcancel', function(e){
@@ -267,6 +297,7 @@ $(document).ready(function(){
       resizeElement.removeClass('resizable');
       // Reset the animation on cancel
       particle.init();
+      particle.sampleLeft = leftValue;
     });
   }
   
