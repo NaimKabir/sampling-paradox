@@ -2,6 +2,11 @@ html, body {
     background: #fff;
     overflow: hidden;
   }
+
+  #canvas {
+      position: absolute;
+      background-color: #fff;
+  }
   
   .resize {
     position: absolute;
